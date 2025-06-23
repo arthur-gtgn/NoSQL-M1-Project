@@ -16,6 +16,15 @@ def cassandra_value(val):
         return "null"
     if isinstance(val, str):
         return f"'{escape(val)}'"
+    if isinstance(val, (int, float)):
+        return str(val)
+    if isinstance(val, (dict)):
+        if len(val) == 1:
+            return cassandra_value(list(val.values())[0])
+        return f"'{escape(json.dumps(val, ensure_ascii=False))}'"
+    if isinstance(val, list):
+        # Convertir la liste en JSON string
+        return f"'{escape(json.dumps(val, ensure_ascii=False))}'"
     return val
 
 insert_statements = []
